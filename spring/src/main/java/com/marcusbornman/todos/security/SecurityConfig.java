@@ -1,7 +1,5 @@
 package com.marcusbornman.todos.security;
 
-import com.marcusbornman.todos.data.TodoListRepository;
-import com.marcusbornman.todos.data.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,10 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
-
-    private final TodoListRepository todoListRepository;
-
-    private final TodoRepository todoRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
