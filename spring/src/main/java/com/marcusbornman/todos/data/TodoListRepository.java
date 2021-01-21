@@ -1,13 +1,17 @@
 package com.marcusbornman.todos.data;
 
 import com.marcusbornman.todos.model.TodoList;
+import com.marcusbornman.todos.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -30,4 +34,14 @@ public interface TodoListRepository extends JpaRepository<TodoList, Long> {
     @Override
     @PreAuthorize("isFullyAuthenticated() and #todoList.user.username == principal.username")
     void delete(TodoList todoList);
+
+    /**
+     * Saves entity without security checks.
+     */
+    @RestResource(exported = false)
+    @Transactional
+    @Modifying
+    default <S extends TodoList> S saveInternal(final S entity) {
+        return save(entity);
+    }
 }
