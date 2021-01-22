@@ -1,4 +1,4 @@
-package com.marcusbornman.todos.security;
+package com.marcusbornman.spring_todos.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

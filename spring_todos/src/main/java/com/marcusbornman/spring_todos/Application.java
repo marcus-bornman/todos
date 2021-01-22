@@ -1,4 +1,4 @@
-package com.marcusbornman.todos;
+package com.marcusbornman.spring_todos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

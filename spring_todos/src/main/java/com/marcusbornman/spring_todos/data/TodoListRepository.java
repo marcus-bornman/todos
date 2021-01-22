@@ -1,7 +1,6 @@
-package com.marcusbornman.todos.data;
+package com.marcusbornman.spring_todos.data;
 
-import com.marcusbornman.todos.model.Todo;
-import com.marcusbornman.todos.model.TodoList;
+import com.marcusbornman.spring_todos.model.TodoList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,24 +15,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @RepositoryRestResource
-public interface TodoRepository extends JpaRepository<Todo, Long> {
+public interface TodoListRepository extends JpaRepository<TodoList, Long> {
     @Override
     @PreAuthorize("isFullyAuthenticated()")
-    @Query("select todo from Todo todo where todoList.user.username = ?#{principal.username}")
-    Page<Todo> findAll(Pageable pageable);
+    @Query("select todoList from TodoList todoList where user.username = ?#{principal.username}")
+    Page<TodoList> findAll(Pageable pageable);
 
     @Override
-    @PreAuthorize("isFullyAuthenticated() and #s.todoList.user.username == principal.username")
-    <S extends Todo> S save(S s);
+    @PreAuthorize("isFullyAuthenticated() and #s.user.username == principal.username")
+    <S extends TodoList> S save(S s);
 
     @Override
     @PreAuthorize("isFullyAuthenticated()")
-    @PostAuthorize("!returnObject.empty and returnObject.get().todoList.user.username == principal.username")
-    Optional<Todo> findById(Long aLong);
+    @PostAuthorize("!returnObject.empty and returnObject.get().user.username == principal.username")
+    Optional<TodoList> findById(Long aLong);
 
     @Override
-    @PreAuthorize("isFullyAuthenticated() and #todo.todoList.user.username == principal.username")
-    void delete(Todo todo);
+    @PreAuthorize("isFullyAuthenticated() and #todoList.user.username == principal.username")
+    void delete(TodoList todoList);
 
     /**
      * Saves entity without security checks.
@@ -41,7 +40,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     @RestResource(exported = false)
     @Transactional
     @Modifying
-    default <S extends Todo> S saveInternal(final S entity) {
+    default <S extends TodoList> S saveInternal(final S entity) {
         return save(entity);
     }
 }

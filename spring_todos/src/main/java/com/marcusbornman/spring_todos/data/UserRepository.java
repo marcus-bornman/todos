@@ -1,6 +1,6 @@
-package com.marcusbornman.todos.data;
+package com.marcusbornman.spring_todos.data;
 
-import com.marcusbornman.todos.model.User;
+import com.marcusbornman.spring_todos.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

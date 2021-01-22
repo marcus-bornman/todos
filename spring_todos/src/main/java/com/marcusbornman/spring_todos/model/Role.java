@@ -1,10 +1,9 @@
-package com.marcusbornman.todos.model;
+package com.marcusbornman.spring_todos.model;
 
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 @Entity
 @Data

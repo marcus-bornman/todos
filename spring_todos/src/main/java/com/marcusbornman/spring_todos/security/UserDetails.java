@@ -1,7 +1,7 @@
-package com.marcusbornman.todos.security;
+package com.marcusbornman.spring_todos.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.marcusbornman.todos.model.User;
+import com.marcusbornman.spring_todos.model.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,11 +1,11 @@
-package com.marcusbornman.todos;
+package com.marcusbornman.spring_todos;
 
-import com.marcusbornman.todos.data.TodoListRepository;
-import com.marcusbornman.todos.data.TodoRepository;
-import com.marcusbornman.todos.data.UserRepository;
-import com.marcusbornman.todos.model.Todo;
-import com.marcusbornman.todos.model.TodoList;
-import com.marcusbornman.todos.model.User;
+import com.marcusbornman.spring_todos.data.TodoListRepository;
+import com.marcusbornman.spring_todos.data.TodoRepository;
+import com.marcusbornman.spring_todos.data.UserRepository;
+import com.marcusbornman.spring_todos.model.Todo;
+import com.marcusbornman.spring_todos.model.TodoList;
+import com.marcusbornman.spring_todos.model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,7 @@
-package com.marcusbornman.todos.security;
+package com.marcusbornman.spring_todos.security;
 
-import com.marcusbornman.todos.data.UserRepository;
-import com.marcusbornman.todos.model.User;
+import com.marcusbornman.spring_todos.data.UserRepository;
+import com.marcusbornman.spring_todos.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
