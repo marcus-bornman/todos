@@ -1,7 +1,6 @@
-package com.marcusbornman.spring_todos.security;
+package com.marcusbornman.spring_todos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.marcusbornman.spring_todos.model.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+// We're implementing this as a wrapper class for User in order to support Spring Security.
 @RequiredArgsConstructor
 public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
     @Getter

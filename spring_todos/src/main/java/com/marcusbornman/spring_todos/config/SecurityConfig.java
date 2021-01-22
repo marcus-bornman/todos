@@ -1,5 +1,6 @@
-package com.marcusbornman.spring_todos.security;
+package com.marcusbornman.spring_todos.config;
 
+import com.marcusbornman.spring_todos.service.UserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
