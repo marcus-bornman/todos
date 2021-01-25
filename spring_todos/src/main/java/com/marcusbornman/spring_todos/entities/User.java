@@ -15,9 +15,12 @@ import java.util.List;
 @Data
 public class User {
     @Id
+    @NotNull
+    @NotEmpty
     private String username;
 
     @NotNull
+    @NotEmpty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

@@ -1,10 +1,12 @@
-package com.marcusbornman.spring_todos.model;
+package com.marcusbornman.spring_todos.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -15,13 +17,13 @@ public class Todo {
     private Long id;
 
     @NotNull
+    @NotEmpty
     private String title;
 
     @Nullable
     private String description;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @NotNull
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     private TodoList todoList;
 }
