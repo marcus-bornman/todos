@@ -1,6 +1,6 @@
 package com.marcusbornman.spring_todos.config;
 
-import com.marcusbornman.spring_todos.service.UserDetailsService;
+import com.marcusbornman.spring_todos.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserDetailsService userDetailsService;
+    private final UserService userDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
@@ -31,7 +31,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // We are currently allowing access to the actuator to everyone.
                 .antMatchers("/actuator/**").permitAll()
-                // We also allow full access to the Spring Data REST Api; but, method-level security is employed in the repositories to impose fine-grained control.
+                // Next, we allow full access to the API docs.
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/v3/**").permitAll()
+                // We also allow full access to the API; but, method level security is applied to controllers.
                 .antMatchers("/api/**").permitAll()
                 // We deny all requests other than the ones above.
                 .anyRequest().denyAll()
