@@ -1,11 +1,11 @@
 package com.marcusbornman.spring_todos;
 
-import com.marcusbornman.spring_todos.data.TodoListRepository;
-import com.marcusbornman.spring_todos.data.TodoRepository;
-import com.marcusbornman.spring_todos.data.UserRepository;
-import com.marcusbornman.spring_todos.model.Todo;
-import com.marcusbornman.spring_todos.model.TodoList;
-import com.marcusbornman.spring_todos.model.User;
+import com.marcusbornman.spring_todos.entities.Todo;
+import com.marcusbornman.spring_todos.entities.TodoList;
+import com.marcusbornman.spring_todos.entities.User;
+import com.marcusbornman.spring_todos.repositories.TodoListRepository;
+import com.marcusbornman.spring_todos.repositories.TodoRepository;
+import com.marcusbornman.spring_todos.repositories.UserRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class ApplicationTests {
     //region User - CREATE
 
     @Test
-    public void givenNewUser_whenUserIsPosted_thenCreatedResponse() throws Exception {
+    public void givenNewUser_whenValidUserIsPosted_thenUserIsCreated() throws Exception {
         // Given
         String newUserJson = "{\"username\":\"John\",\"password\":\"password123\"}";
 
@@ -77,26 +77,27 @@ public class ApplicationTests {
 
         // Then
         resultActions.andExpect(status().isCreated());
+        assertNotNull(userRepository.findById("John").orElse(null));
     }
 
     @Test
-    public void givenNewUser_whenUserIsPosted_thenUserIsCreated() throws Exception {
+    public void givenNewUser_whenInvalidUserIsPosted_thenBadRequest() throws Exception {
         // Given
-        String newUserJson = "{\"username\":\"John\",\"password\":\"password123\"}";
+        String newUserJson = "{\"username\":\"\",\"password\":\"\"}";
 
         // When
-        mvc.perform(post("/api/users")
+        ResultActions resultActions = mvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newUserJson));
 
         // Then
-        assertNotNull(userRepository.findByUsername("John").orElse(null));
+        resultActions.andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenExistingUser_whenUserIsPostedByUnauthorized_thenUnauthorizedResponse() throws Exception {
+    public void givenExistingUser_whenUserIsPosted_thenConflictResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
+        userRepository.save(testUser("John", "password123"));
         String newUserJson = "{\"username\":\"John\",\"password\":\"john123\"}";
 
         // When
@@ -105,24 +106,7 @@ public class ApplicationTests {
                 .content(newUserJson));
 
         // Then
-        resultActions.andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void givenExistingUser_whenUserIsPostedByDifferentAuthorized_thenUnauthorizedResponse() throws Exception {
-        // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-        userRepository.saveInternal(testUser("Jane", "password123"));
-        String edited = "{\"username\":\"John\",\"password\":\"john123\"}";
-
-        // When
-        ResultActions resultActions = mvc.perform(post("/api/users")
-                .header("Authorization", "Basic Jane:password123")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(edited));
-
-        // Then
-        resultActions.andExpect(status().isUnauthorized());
+        resultActions.andExpect(status().isConflict());
     }
 
     //endregion
@@ -130,24 +114,30 @@ public class ApplicationTests {
     //region User - READ
 
     @Test
-    public void givenExistingUsers_whenAllUsersIsReadByAuthorized_thenMethodNotAllowedResponse() throws Exception {
+    public void givenExistingUser_whenUserIsReadByAuthorized_thenUserDetailsReturned() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-        userRepository.saveInternal(testUser("Jane", "password123"));
+        userRepository.save(testUser("John", "password123"));
 
         // When
-        ResultActions resultActions = mvc.perform(get("/api/users")
+        ResultActions resultActions = mvc.perform(get("/api/users/John")
                 .with(httpBasic("John", "password123"))
                 .contentType(MediaType.APPLICATION_JSON));
 
         // Then
-        resultActions.andExpect(status().isMethodNotAllowed());
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.username").exists());
+        resultActions.andExpect(jsonPath("$.password").doesNotExist());
+        resultActions.andExpect(jsonPath("$.creationDate").exists());
+        resultActions.andExpect(jsonPath("$.expiryDate").exists());
+        resultActions.andExpect(jsonPath("$.locked").exists());
+        resultActions.andExpect(jsonPath("$.credentialsExpiryDate").exists());
+        resultActions.andExpect(jsonPath("$.disabled").exists());
     }
 
     @Test
     public void givenExistingUser_whenUserIsReadByUnauthorized_thenUnauthorizedResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
+        userRepository.save(testUser("John", "password123"));
 
         // When
         ResultActions resultActions = mvc.perform(get("/api/users/John")
@@ -160,8 +150,8 @@ public class ApplicationTests {
     @Test
     public void givenExistingUser_whenUserIsReadByDifferentAuthorized_thenForbiddenResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-        userRepository.saveInternal(testUser("Jane", "password123"));
+        userRepository.save(testUser("John", "password123"));
+        userRepository.save(testUser("Jane", "password123"));
 
         // When
         ResultActions resultActions = mvc.perform(get("/api/users/John")
@@ -172,47 +162,14 @@ public class ApplicationTests {
         resultActions.andExpect(status().isForbidden());
     }
 
-    @Test
-    public void givenExistingUser_whenUserIsReadByAuthorized_thenOkResponse() throws Exception {
-        // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-
-        // When
-        ResultActions resultActions = mvc.perform(get("/api/users/John")
-                .with(httpBasic("John", "password123"))
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        resultActions.andExpect(status().isOk());
-    }
-
-    @Test
-    public void givenExistingUser_whenUserIsReadByAuthorized_thenUserDetailsReturned() throws Exception {
-        // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-
-        // When
-        ResultActions resultActions = mvc.perform(get("/api/users/John")
-                .with(httpBasic("John", "password123"))
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        resultActions.andExpect(jsonPath("$.password").doesNotExist())
-                .andExpect(jsonPath("$.creationDate").exists())
-                .andExpect(jsonPath("$.expiryDate").exists())
-                .andExpect(jsonPath("$.locked").exists())
-                .andExpect(jsonPath("$.credentialsExpiryDate").exists())
-                .andExpect(jsonPath("$.disabled").exists());
-    }
-
     //endregion
 
     //region User - UPDATE
 
     @Test
-    public void givenExistingUser_whenUsersIsUpdatedByAuthorized_thenNoContentResponse() throws Exception {
+    public void givenExistingUser_whenUsersIsUpdatedByAuthorized_thenUserIsUpdated() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
+        User originalUser = userRepository.save(testUser("John", "password123"));
         String editedUserJson = "{\"username\":\"John\",\"password\":\"john123\"}";
 
         // When
@@ -223,30 +180,15 @@ public class ApplicationTests {
 
         // Then
         resultActions.andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void givenExistingUser_whenUserIsUpdatedByAuthorized_thenUserIsUpdated() throws Exception {
-        // Given
-        User originalUser = userRepository.saveInternal(testUser("John", "password123"));
-        String editedUserJson = "{\"username\":\"John\",\"password\":\"john123\"}";
-
-        // When
-        mvc.perform(put("/api/users/John")
-                .with(httpBasic("John", "password123"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(editedUserJson));
-
-        // Then
-        User updatedUser = userRepository.findByUsername("John").orElseThrow();
+        User updatedUser = userRepository.findById("John").orElseThrow();
         assertNotEquals(originalUser.getPassword(), updatedUser.getPassword());
     }
 
     @Test
     public void givenExistingUser_whenUsersIsUpdatedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-        userRepository.saveInternal(testUser("Jane", "password123"));
+        userRepository.save(testUser("John", "password123"));
+        userRepository.save(testUser("Jane", "password123"));
         String editedUserJson = "{\"username\":\"John\",\"password\":\"john123\"}";
 
         // When
@@ -266,7 +208,7 @@ public class ApplicationTests {
     @Test
     public void givenExistingUser_whenUsersIsDeletedByAuthorized_thenNoContentResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
+        userRepository.save(testUser("John", "password123"));
 
         // When
         ResultActions resultActions = mvc.perform(delete("/api/users/John")
@@ -274,26 +216,26 @@ public class ApplicationTests {
 
         // Then
         resultActions.andExpect(status().isNoContent());
+        assertNull(userRepository.findById("John").orElse(null));
     }
 
     @Test
-    public void givenExistingUser_whenUserIsDeletedByAuthorized_thenUserIsDeleted() throws Exception {
+    public void givenExistingUser_whenUsersIsDeletedByUnAuthorized_thenUnauthorizedResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
+        userRepository.save(testUser("John", "password123"));
 
         // When
-        mvc.perform(delete("/api/users/John")
-                .with(httpBasic("John", "password123")));
+        ResultActions resultActions = mvc.perform(delete("/api/users/John"));
 
         // Then
-        assertNull(userRepository.findByUsername("John").orElse(null));
+        resultActions.andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void givenExistingUser_whenUsersIsDeletedByDifferentAuthorized_thenUnauthorizedResponse() throws Exception {
+    public void givenExistingUser_whenUsersIsDeletedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-        userRepository.saveInternal(testUser("Jane", "password123"));
+        userRepository.save(testUser("John", "password123"));
+        userRepository.save(testUser("Jane", "password123"));
 
         // When
         ResultActions resultActions = mvc.perform(delete("/api/users/John")
@@ -308,34 +250,19 @@ public class ApplicationTests {
     //region TodoList - CREATE
 
     @Test
-    public void givenNewTodoList_whenTodoListIsPostedByAuthenticated_thenCreatedResponse() throws Exception {
+    public void givenValidTodoList_whenTodoListIsPostedByAuthenticated_thenTodoListCreated() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "john123"));
-        String newTodoList = "{\"title\":\"University\",\"user\":\"/api/users/John\"}";
+        userRepository.save(testUser("John", "john123"));
+        String newTodoList = "{\"title\":\"University\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(post("/api/todoLists")
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists")
                 .with(httpBasic("John", "john123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTodoList));
 
         // Then
         resultActions.andExpect(status().isCreated());
-    }
-
-    @Test
-    public void givenNewTodoList_whenTodoListIsPostedByAuthenticated_thenTodoListCreated() throws Exception {
-        // Given
-        userRepository.saveInternal(testUser("John", "john123"));
-        String newTodoList = "{\"title\":\"University\",\"user\":\"/api/users/John\"}";
-
-        // When
-        mvc.perform(post("/api/todoLists")
-                .with(httpBasic("John", "john123"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(newTodoList));
-
-        // Then
         List<TodoList> todoLists = todoListRepository.findAll();
         assertEquals(1, todoLists.size());
         assertEquals("University", todoLists.get(0).getTitle());
@@ -343,13 +270,14 @@ public class ApplicationTests {
     }
 
     @Test
-    public void givenNewTodoList_whenTodoListIsPostedByUnauthenticated_thenBadRequestResponse() throws Exception {
+    public void givenInalidTodoList_whenTodoListIsPostedByAuthenticated_thenBadRequestResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "john123"));
-        String newTodoList = "{\"title\":\"University\",\"user\":\"/api/users/John\"}";
+        userRepository.save(testUser("John", "john123"));
+        String newTodoList = "{\"title\":\"\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(post("/api/todoLists")
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists")
+                .with(httpBasic("John", "john123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTodoList));
 
@@ -357,52 +285,94 @@ public class ApplicationTests {
         resultActions.andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void givenNewTodoList_whenTodoListIsPostedByUnauthenticated_thenUnauthorizedResponse() throws Exception {
+        // Given
+        userRepository.save(testUser("John", "john123"));
+        String newTodoList = "{\"title\":\"University\"}";
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newTodoList));
+
+        // Then
+        resultActions.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenNewTodoList_whenTodoListIsPostedByDifferentUser_thenForbiddenResponse() throws Exception {
+        // Given
+        userRepository.save(testUser("John", "john123"));
+        userRepository.save(testUser("Jane", "jane123"));
+        String newTodoList = "{\"title\":\"University\"}";
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists")
+                .with(httpBasic("Jane", "jane123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newTodoList));
+
+        // Then
+        resultActions.andExpect(status().isForbidden());
+    }
+
     //endregion
 
     //region TodoList - READ
-
-    @Test
-    public void givenNoTodoLists_whenAllListsIsReadByAuthorized_thenOkResponse() throws Exception {
-        // Given
-        userRepository.saveInternal(testUser("John", "password123"));
-
-        // When
-        ResultActions resultActions = mvc.perform(get("/api/todoLists")
-                .with(httpBasic("John", "password123"))
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        resultActions.andExpect(status().isOk());
-    }
-
     @Test
     public void givenTodoLists_whenAllListsIsReadByAuthorized_thenRelevantListsReturned() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        User jane = userRepository.saveInternal(testUser("Jane", "password123"));
-        todoListRepository.saveInternal(testTodoList("Personal", john));
-        todoListRepository.saveInternal(testTodoList("University", john));
-        todoListRepository.saveInternal(testTodoList("Family", jane));
+        User john = userRepository.save(testUser("John", "password123"));
+        User jane = userRepository.save(testUser("Jane", "password123"));
+        todoListRepository.save(testTodoList("Personal", john));
+        todoListRepository.save(testTodoList("University", john));
+        todoListRepository.save(testTodoList("Family", jane));
 
         // When
-        ResultActions resultActions = mvc.perform(get("/api/todoLists")
+        ResultActions resultActions = mvc.perform(get("/api/users/John/todoLists")
                 .with(httpBasic("John", "password123"))
                 .contentType(MediaType.APPLICATION_JSON));
 
         // Then
-        resultActions.andExpect(jsonPath("$._embedded.todoLists.[?(@.title == \"Personal\")]").exists())
-                .andExpect(jsonPath("$._embedded.todoLists.[?(@.title == \"University\")]").exists())
-                .andExpect(jsonPath("$._embedded.todoLists.[?(@.title == \"Family\")]").doesNotExist());
+        resultActions.andExpect(jsonPath("$.[?(@.title == \"Personal\")]").exists())
+                .andExpect(jsonPath("$.[?(@.title == \"University\")]").exists())
+                .andExpect(jsonPath("$.[?(@.title == \"Family\")]").doesNotExist());
     }
 
     @Test
-    public void whenAllListsIsReadByUnauthorized_thenUnauthorizedResponse() throws Exception {
+    public void givenTodoLists_whenAllListsIsReadByUnauthorized_thenUnauthorizedResponse() throws Exception {
+        // Given
+        User john = userRepository.save(testUser("John", "password123"));
+        User jane = userRepository.save(testUser("Jane", "password123"));
+        todoListRepository.save(testTodoList("Personal", john));
+        todoListRepository.save(testTodoList("University", john));
+        todoListRepository.save(testTodoList("Family", jane));
+
         // When
-        ResultActions resultActions = mvc.perform(get("/api/todoLists")
+        ResultActions resultActions = mvc.perform(get("/api/users/John/todoLists")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // Then
         resultActions.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenTodoLists_whenAllListsIsReadByDifferentUser_thenForbiddenResponse() throws Exception {
+        // Given
+        User john = userRepository.save(testUser("John", "password123"));
+        User jane = userRepository.save(testUser("Jane", "password123"));
+        todoListRepository.save(testTodoList("Personal", john));
+        todoListRepository.save(testTodoList("University", john));
+        todoListRepository.save(testTodoList("Family", jane));
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/api/users/John/todoLists")
+                .with(httpBasic("Jane", "password123"))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isForbidden());
     }
 
     //endregion
@@ -410,36 +380,20 @@ public class ApplicationTests {
     //region TodoList - UPDATE
 
     @Test
-    public void givenExistingList_whenListIsUpdatedByAuthorized_thenNoContentResponse() throws Exception {
+    public void givenExistingList_whenListIsUpdatedByAuthorized_thenTodoListUpdated() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList originalList = todoListRepository.saveInternal(testTodoList("University", john));
-        String todoListJson = "{\"title\":\"School\",\"user\":\"/api/users/John\"}";
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList originalList = todoListRepository.save(testTodoList("University", john));
+        String todoListJson = "{\"title\":\"School\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(put("/api/todoLists/" + originalList.getId())
+        ResultActions resultActions = mvc.perform(put("/api/users/John/todoLists/" + originalList.getId())
                 .with(httpBasic("John", "john123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(todoListJson));
 
         // Then
         resultActions.andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void givenExistingList_whenListIsUpdatedByAuthorized_thenTodoListUpdated() throws Exception {
-        // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList originalList = todoListRepository.saveInternal(testTodoList("University", john));
-        String todoListJson = "{\"title\":\"School\",\"user\":\"/api/users/John\"}";
-
-        // When
-        mvc.perform(put("/api/todoLists/" + originalList.getId())
-                .with(httpBasic("John", "john123"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(todoListJson));
-
-        // Then
         TodoList editedList = todoListRepository.findAll().get(0);
         assertEquals("School", editedList.getTitle());
     }
@@ -447,13 +401,13 @@ public class ApplicationTests {
     @Test
     public void givenExistingList_whenListIsUpdatedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("Jane", "jane123"));
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList originalList = todoListRepository.saveInternal(testTodoList("University", john));
-        String todoListJson = "{\"title\":\"School\",\"user\":\"/api/users/John\"}";
+        userRepository.save(testUser("Jane", "jane123"));
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList originalList = todoListRepository.save(testTodoList("University", john));
+        String todoListJson = "{\"title\":\"School\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(put("/api/todoLists/" + originalList.getId())
+        ResultActions resultActions = mvc.perform(put("/api/users/John/todoLists/" + originalList.getId())
                 .with(httpBasic("Jane", "jane123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(todoListJson));
@@ -467,42 +421,29 @@ public class ApplicationTests {
     //region TodoList - DELETE
 
     @Test
-    public void givenExistingList_whenListIsDeletedByAuthorized_thenNoContentResponse() throws Exception {
+    public void givenExistingList_whenListIsDeletedByAuthorized_thenTodoListDeleted() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList originalList = todoListRepository.saveInternal(testTodoList("University", john));
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList originalList = todoListRepository.save(testTodoList("University", john));
 
         // When
-        ResultActions resultActions = mvc.perform(delete("/api/todoLists/" + originalList.getId())
+        ResultActions resultActions = mvc.perform(delete("/api/users/John/todoLists/" + originalList.getId())
                 .with(httpBasic("John", "john123")));
 
         // Then
         resultActions.andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void givenExistingList_whenListIsDeletedByAuthorized_thenTodoListDeleted() throws Exception {
-        // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList originalList = todoListRepository.saveInternal(testTodoList("University", john));
-
-        // When
-        mvc.perform(delete("/api/todoLists/" + originalList.getId())
-                .with(httpBasic("John", "john123")));
-
-        // Then
         assertFalse(todoListRepository.existsById(originalList.getId()));
     }
 
     @Test
-    public void givenExistingList_whenListIsDeletedByDifferentAuthorized_thenDeletedResponse() throws Exception {
+    public void givenExistingList_whenListIsDeletedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("Jane", "jane123"));
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList originalList = todoListRepository.saveInternal(testTodoList("University", john));
+        userRepository.save(testUser("Jane", "jane123"));
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList originalList = todoListRepository.save(testTodoList("University", john));
 
         // When
-        ResultActions resultActions = mvc.perform(delete("/api/todoLists/" + originalList.getId())
+        ResultActions resultActions = mvc.perform(delete("/api/users/John/todoLists/" + originalList.getId())
                 .with(httpBasic("Jane", "jane123")));
 
         // Then
@@ -514,36 +455,20 @@ public class ApplicationTests {
     //region Todo - CREATE
 
     @Test
-    public void givenNewTodo_whenTodoIsPostedByAuthenticated_thenCreatedResponse() throws Exception {
+    public void givenValidTodo_whenTodoIsPostedByAuthenticated_thenTodoCreated() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("University", john));
-        String newTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"todoList\":\"/api/todoLists/" + todoList.getId() + "\"}";
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList todoList = todoListRepository.save(testTodoList("University", john));
+        String newTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(post("/api/todos")
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists/" + todoList.getId() + "/todos")
                 .with(httpBasic("John", "john123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTodoJson));
 
         // Then
         resultActions.andExpect(status().isCreated());
-    }
-
-    @Test
-    public void givenNewTodo_whenTodoIsPostedByAuthenticated_thenTodoCreated() throws Exception {
-        // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("University", john));
-        String newTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"todoList\":\"/api/todoLists/" + todoList.getId() + "\"}";
-
-        // When
-        mvc.perform(post("/api/todos")
-                .with(httpBasic("John", "john123"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(newTodoJson));
-
-        // Then
         List<Todo> todos = todoRepository.findAll();
         assertEquals("University", todos.get(0).getTodoList().getTitle());
         assertEquals("Register", todos.get(0).getTitle());
@@ -551,14 +476,15 @@ public class ApplicationTests {
     }
 
     @Test
-    public void givenNewTodo_whenTodoIsPostedByUnauthenticated_thenBadRequestResponse() throws Exception {
+    public void givenInvalidTodo_whenTodoIsPostedByAuthenticated_thenBadRequestResponse() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "john123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("University", john));
-        String newTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"todoList\":\"/api/todoLists/" + todoList.getId() + "\"}";
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList todoList = todoListRepository.save(testTodoList("University", john));
+        String newTodoJson = "{\"title\":\"\",\"description\":\"Register Online\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(post("/api/todos")
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists/" + todoList.getId() + "/todos")
+                .with(httpBasic("John", "john123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newTodoJson));
 
@@ -566,109 +492,159 @@ public class ApplicationTests {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    //endregion
-
-    //region TodoList - READ
-
     @Test
-    public void givenNoTodos_whenAllTodosIsReadByAuthorized_thenOkResponse() throws Exception {
+    public void givenValidTodo_whenTodoIsPostedByUnauthenticated_thenUnauthorizedResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("John", "password123"));
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList todoList = todoListRepository.save(testTodoList("University", john));
+        String newTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(get("/api/todos")
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists/" + todoList.getId() + "/todos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newTodoJson));
+
+        // Then
+        resultActions.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenValidTodo_whenTodoIsPostedByDifferentUser_thenForbiddenResponse() throws Exception {
+        // Given
+        userRepository.save(testUser("Jane", "jane123"));
+        User john = userRepository.save(testUser("John", "john123"));
+        TodoList todoList = todoListRepository.save(testTodoList("University", john));
+        String newTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\"}";
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/api/users/John/todoLists/" + todoList.getId() + "/todos")
+                .with(httpBasic("Jane", "jane123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newTodoJson));
+
+        // Then
+        resultActions.andExpect(status().isForbidden());
+    }
+
+    //endregion
+
+    //region Todo - READ
+
+    @Test
+    public void givenTodos_whenAllTodosIsReadByAuthorized_thenRelevantListReturned() throws Exception {
+        // Given
+        User john = userRepository.save(testUser("John", "password123"));
+        User jane = userRepository.save(testUser("Jane", "password123"));
+        TodoList johnList = todoListRepository.save(testTodoList("Personal", john));
+        TodoList janeList = todoListRepository.save(testTodoList("Personal", jane));
+        todoRepository.save(testTodo("John's Todo #1", "Get done first", johnList));
+        todoRepository.save(testTodo("John's Todo #2", "Get done first", johnList));
+        todoRepository.save(testTodo("Jane's Only Todo", "Get done ASAP", janeList));
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/api/users/John/todoLists/" + johnList.getId() + "/todos")
                 .with(httpBasic("John", "password123"))
                 .contentType(MediaType.APPLICATION_JSON));
 
         // Then
         resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.[?(@.title == \"John's Todo #1\")]").exists())
+                .andExpect(jsonPath("$.[?(@.title == \"John's Todo #2\")]").exists())
+                .andExpect(jsonPath("$.[?(@.title == \"Jane's Only Todo\")]").doesNotExist());
     }
 
     @Test
-    public void givenTodos_whenAllTodosIsReadByAuthorized_thenRelevantListsReturned() throws Exception {
+    public void givenTodos_whenAllTodosIsReadByUnauthorized_thenUnauthorizedResponse() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        User jane = userRepository.saveInternal(testUser("Jane", "password123"));
-        TodoList johnList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        TodoList janeList = todoListRepository.saveInternal(testTodoList("Personal", jane));
-        todoRepository.saveInternal(testTodo("John's Todo #1", "Get done first", johnList));
-        todoRepository.saveInternal(testTodo("John's Todo #2", "Get done first", johnList));
-        todoRepository.saveInternal(testTodo("Jane's Only Todo", "Get done ASAP", janeList));
+        User john = userRepository.save(testUser("John", "password123"));
+        User jane = userRepository.save(testUser("Jane", "password123"));
+        TodoList johnList = todoListRepository.save(testTodoList("Personal", john));
+        TodoList janeList = todoListRepository.save(testTodoList("Personal", jane));
+        todoRepository.save(testTodo("John's Todo #1", "Get done first", johnList));
+        todoRepository.save(testTodo("John's Todo #2", "Get done first", johnList));
+        todoRepository.save(testTodo("Jane's Only Todo", "Get done ASAP", janeList));
 
         // When
-        ResultActions resultActions = mvc.perform(get("/api/todos")
-                .with(httpBasic("John", "password123"))
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        resultActions.andExpect(jsonPath("$._embedded.todos.[?(@.title == \"John's Todo #1\")]").exists())
-                .andExpect(jsonPath("$._embedded.todos.[?(@.title == \"John's Todo #2\")]").exists())
-                .andExpect(jsonPath("$._embedded.todos.[?(@.title == \"Jane's Only Todo\")]").doesNotExist());
-    }
-
-    @Test
-    public void whenAllTodosIsReadByUnauthorized_thenUnauthorizedResponse() throws Exception {
-        // When
-        ResultActions resultActions = mvc.perform(get("/api/todos")
+        ResultActions resultActions = mvc.perform(get("/api/users/John/todoLists/" + johnList.getId() + "/todos")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // Then
         resultActions.andExpect(status().isUnauthorized());
     }
 
+    @Test
+    public void givenTodos_whenAllTodosIsReadByDifferentUser_thenForbiddenResponse() throws Exception {
+        // Given
+        User john = userRepository.save(testUser("John", "password123"));
+        User jane = userRepository.save(testUser("Jane", "password123"));
+        TodoList johnList = todoListRepository.save(testTodoList("Personal", john));
+        TodoList janeList = todoListRepository.save(testTodoList("Personal", jane));
+        todoRepository.save(testTodo("John's Todo #1", "Get done first", johnList));
+        todoRepository.save(testTodo("John's Todo #2", "Get done first", johnList));
+        todoRepository.save(testTodo("Jane's Only Todo", "Get done ASAP", janeList));
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/api/users/John/todoLists/" + johnList.getId() + "/todos")
+                .with(httpBasic("Jane", "password123"))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isForbidden());
+    }
+
     //endregion
 
-    //region TodoList - UPDATE
+    //region Todo - UPDATE
 
     @Test
-    public void givenExistingTodo_whenTodoIsUpdatedByAuthorized_thenNoContentResponse() throws Exception {
+    public void givenExistingTodo_whenTodoIsUpdatedByAuthorized_thenTodoUpdated() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        Todo originalTodo = todoRepository.saveInternal(testTodo("John's Todo", "Get done ASAP", todoList));
+        User john = userRepository.save(testUser("John", "password123"));
+        TodoList todoList = todoListRepository.save(testTodoList("Personal", john));
+        Todo originalTodo = todoRepository.save(testTodo("John's Todo", "Get done ASAP", todoList));
         String updatedTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"user\":\"/api/todoLists/" + todoList.getId() + "\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(put("/api/todos/" + originalTodo.getId())
+        ResultActions resultActions = mvc.perform(put("/api/users/John/todoLists/" + todoList.getId() + "/todos/" + originalTodo.getId())
                 .with(httpBasic("John", "password123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedTodoJson));
 
         // Then
         resultActions.andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void givenExistingTodo_whenTodoIsUpdatedByAuthorized_thenTodoUpdated() throws Exception {
-        // Given
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        Todo originalTodo = todoRepository.saveInternal(testTodo("John's Todo", "Get done ASAP", todoList));
-        String updatedTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"user\":\"/api/todoLists/" + todoList.getId() + "\"}";
-
-        // When
-        mvc.perform(put("/api/todos/" + originalTodo.getId())
-                .with(httpBasic("John", "password123"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updatedTodoJson));
-
-        // Then
         Todo todo = todoRepository.findAll().get(0);
         assertEquals("Register", todo.getTitle());
         assertEquals("Register Online", todo.getDescription());
     }
 
     @Test
-    public void givenExistingTodo_whenTodoIsUpdatedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
+    public void givenExistingTodo_whenTodoIsUpdatedByUnauthorized_thenUnauthorizedResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("Jane", "jane123"));
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        Todo originalTodo = todoRepository.saveInternal(testTodo("John's Todo", "Get done ASAP", todoList));
+        User john = userRepository.save(testUser("John", "password123"));
+        TodoList todoList = todoListRepository.save(testTodoList("Personal", john));
+        Todo originalTodo = todoRepository.save(testTodo("John's Todo", "Get done ASAP", todoList));
         String updatedTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"user\":\"/api/todoLists/" + todoList.getId() + "\"}";
 
         // When
-        ResultActions resultActions = mvc.perform(put("/api/todos/" + originalTodo.getId())
+        ResultActions resultActions = mvc.perform(put("/api/users/John/todoLists/" + todoList.getId() + "/todos/" + originalTodo.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedTodoJson));
+
+        // Then
+        resultActions.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenExistingTodo_whenTodoIsUpdatedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
+        // Given
+        userRepository.save(testUser("Jane", "jane123"));
+        User john = userRepository.save(testUser("John", "password123"));
+        TodoList todoList = todoListRepository.save(testTodoList("Personal", john));
+        Todo originalTodo = todoRepository.save(testTodo("John's Todo", "Get done ASAP", todoList));
+        String updatedTodoJson = "{\"title\":\"Register\",\"description\":\"Register Online\",\"user\":\"/api/todoLists/" + todoList.getId() + "\"}";
+
+        // When
+        ResultActions resultActions = mvc.perform(put("/api/users/John/todoLists/" + todoList.getId() + "/todos/" + originalTodo.getId())
                 .with(httpBasic("Jane", "jane123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedTodoJson));
@@ -679,48 +655,50 @@ public class ApplicationTests {
 
     //endregion
 
-    //region TodoList - DELETE
-
-    @Test
-    public void givenExistingTodo_whenTodoIsDeletedByAuthorized_thenNoContentResponse() throws Exception {
-        // Given
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        Todo originalTodo = todoRepository.saveInternal(testTodo("John's Todo", "Get done ASAP", todoList));
-
-        // When
-        ResultActions resultActions = mvc.perform(delete("/api/todos/" + originalTodo.getId())
-                .with(httpBasic("John", "password123")));
-
-        // Then
-        resultActions.andExpect(status().isNoContent());
-    }
+    //region Todo - DELETE
 
     @Test
     public void givenExistingTodo_whenTodoIsDeletedByAuthorized_thenTodoDeleted() throws Exception {
         // Given
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        Todo originalTodo = todoRepository.saveInternal(testTodo("John's Todo", "Get done ASAP", todoList));
+        User john = userRepository.save(testUser("John", "password123"));
+        TodoList todoList = todoListRepository.save(testTodoList("Personal", john));
+        Todo originalTodo = todoRepository.save(testTodo("John's Todo", "Get done ASAP", todoList));
 
         // When
-        mvc.perform(delete("/api/todos/" + originalTodo.getId())
+        ResultActions resultActions = mvc.perform(delete("/api/users/John/todoLists/" + todoList.getId() + "/todos/" + originalTodo.getId())
                 .with(httpBasic("John", "password123")));
 
         // Then
+        resultActions.andExpect(status().isNoContent());
         assertFalse(todoRepository.existsById(originalTodo.getId()));
     }
 
     @Test
-    public void givenExistingTodo_whenTodoIsDeletedByDifferentAuthorized_thenDeletedResponse() throws Exception {
+    public void givenExistingTodo_whenTodoIsDeletedByUnauthorized_thenUnauthorizedResponse() throws Exception {
         // Given
-        userRepository.saveInternal(testUser("Jane", "jane123"));
-        User john = userRepository.saveInternal(testUser("John", "password123"));
-        TodoList todoList = todoListRepository.saveInternal(testTodoList("Personal", john));
-        Todo originalTodo = todoRepository.saveInternal(testTodo("John's Todo", "Get done ASAP", todoList));
+        userRepository.save(testUser("Jane", "jane123"));
+        User john = userRepository.save(testUser("John", "password123"));
+        TodoList todoList = todoListRepository.save(testTodoList("Personal", john));
+        Todo originalTodo = todoRepository.save(testTodo("John's Todo", "Get done ASAP", todoList));
 
         // When
-        ResultActions resultActions = mvc.perform(delete("/api/todos/" + originalTodo.getId())
+        ResultActions resultActions = mvc.perform(
+                delete("/api/users/John/todoLists/" + todoList.getId() + "/todos/" + originalTodo.getId()));
+
+        // Then
+        resultActions.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenExistingTodo_whenTodoIsDeletedByDifferentAuthorized_thenForbiddenResponse() throws Exception {
+        // Given
+        userRepository.save(testUser("Jane", "jane123"));
+        User john = userRepository.save(testUser("John", "password123"));
+        TodoList todoList = todoListRepository.save(testTodoList("Personal", john));
+        Todo originalTodo = todoRepository.save(testTodo("John's Todo", "Get done ASAP", todoList));
+
+        // When
+        ResultActions resultActions = mvc.perform(delete("/api/users/John/todoLists/" + todoList.getId() + "/todos/" + originalTodo.getId())
                 .with(httpBasic("Jane", "jane123")));
 
         // Then
