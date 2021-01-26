@@ -62,6 +62,29 @@
         .nav-masthead .nav-link + .nav-link {
             margin-left: 1rem;
         }
+
+        html,
+        body {
+            overflow-x: hidden; /* Prevent scroll on narrow devices */
+        }
+
+        body {
+            padding-top: 56px;
+        }
+
+        .nav-underline .nav-link {
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            font-size: .875rem;
+            color: #6c757d;
+        }
+
+        .nav-underline .nav-link:hover {
+            color: #007bff;
+        }
+
+        .text-white-50 { color: rgba(255, 255, 255, .5); }
+
     </style>
 </head>
 
@@ -80,15 +103,45 @@
         </div>
     </header>
 
-    <main class="px-3">
+    <main sec:authorize="isAnonymous()" class="px-3">
         <h1>Welcome to Todos</h1>
-        <p class="lead">Todos is a simple application for you to create, edit and de Todo Lists and Tasks.</p>
-        <p sec:authorize="isAnonymous()" class="lead">
+        <p class="lead">Todos is a simple application for you to create, edit and delete Todo Lists and Tasks.</p>
+        <p class="lead">
             <a th:href="@{/register}" class="btn btn-lg btn-secondary fw-bold border-white bg-white">Register</a>
         </p>
-        <p sec:authorize="isAuthenticated()" class="lead">
-            <a href="#" class="btn btn-lg btn-secondary fw-bold border-white bg-white">View Todo Lists</a>
-        </p>
+    </main>
+
+    <main sec:authorize="isAuthenticated()" class="container">
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h6 class="border-bottom pb-2 mb-0 text-dark">List A</h6>
+            <div class="d-flex text-muted pt-3 text-start">
+                <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-gray-dark">Full Name</strong>
+                        <a href="#">Follow</a>
+                    </div>
+                    <span class="d-block">@username</span>
+                </div>
+            </div>
+            <div class="d-flex text-muted pt-3 text-start">
+                <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-gray-dark">Full Name</strong>
+                        <a href="#">Follow</a>
+                    </div>
+                    <span class="d-block">@username</span>
+                </div>
+            </div>
+            <div class="d-flex text-muted pt-3 text-start">
+                <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-gray-dark">Full Name</strong>
+                        <a href="#">Follow</a>
+                    </div>
+                    <span class="d-block">@username</span>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer class="mt-auto text-white-50">

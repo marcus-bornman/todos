@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" class="h-100">
 
 <head>
 
@@ -17,31 +17,47 @@
             integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
             crossorigin="anonymous"></script>
 
-    <!--    Custom Styles-->
+    <!-- Custom CSS -->
     <style>
+        body {
+            text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+            box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+        }
+
+        .cover-container {
+            max-width: 42em;
+        }
+
+        .nav-masthead .nav-link {
+            padding: .25rem 0;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .5);
+            background-color: transparent;
+            border-bottom: .25rem solid transparent;
+        }
+
+        .nav-masthead .nav-link:hover,
+        .nav-masthead .nav-link:focus {
+            border-bottom-color: rgba(255, 255, 255, .25);
+        }
+
+        .nav-masthead .nav-link + .nav-link {
+            margin-left: 1rem;
+        }
+
         html,
         body {
-            height: 100%;
+            overflow-x: hidden; /* Prevent scroll on narrow devices */
         }
 
         body {
-            display: -ms-flexbox;
-            display: -webkit-box;
-            display: flex;
-            -ms-flex-align: center;
-            -ms-flex-pack: center;
-            -webkit-box-align: center;
-            align-items: center;
-            -webkit-box-pack: center;
-            justify-content: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: #f5f5f5;
+            padding-top: 56px;
         }
+
+        .text-white-50 { color: rgba(255, 255, 255, .5); }
 
         .form-signin {
             width: 100%;
-            max-width: 330px;
             padding: 15px;
             margin: 0 auto;
         }
@@ -58,7 +74,7 @@
             z-index: 2;
         }
 
-        .form-signin input[type="email"] {
+        .form-signin input[type="text"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
@@ -72,33 +88,43 @@
     </style>
 </head>
 
-<body class="text-center">
+<body class="d-flex h-100 text-center text-white bg-dark">
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="mb-auto">
+        <div>
+            <h3 class="float-md-start mb-0">Todos</h3>
+            <nav class="nav nav-masthead justify-content-center float-md-end">
+                <a class="nav-link" th:href="@{/login}">Login</a>
+            </nav>
+        </div>
+    </header>
 
-<form th:object="${user}" class="form-signin" th:action="@{/register}" method="POST">
-    <h1 class="h3 mb-3 font-weight-normal">Please Register</h1>
+    <main class="px-3">
+        <form th:object="${user}" class="form-signin" th:action="@{/register}" method="POST">
+            <h3>Please Register</h3>
+            <div th:if="${registrationError}" class="mb-3 alert alert-danger">
+                <span th:text="${registrationError}"></span>
+            </div>
+            <div>
+                <label>
+                    <input th:field="*{username}" th:errorclass="is-invalid" name="username" type="text"
+                           class="form-control" placeholder="Username" required autofocus>
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input th:field="*{password}" th:errorclass="is-invalid" name="password" type="password"
+                           class="form-control" placeholder="Password" required>
+                </label>
+            </div>
+            <button class="btn btn-lg btn-secondary fw-bold border-white bg-white text-black-50" type="submit">Register</button>
+        </form>
+    </main>
 
-    <div th:if="${registrationError}" class="mb-3 alert alert-danger">
-        <span th:text="${registrationError}"></span>
-    </div>
-
-    <label>
-        <input th:field="*{username}" th:errorclass="is-invalid" name="username" type="text"
-               class="form-control" placeholder="Username" required autofocus>
-    </label>
-
-    <label>
-        <input th:field="*{password}" th:errorclass="is-invalid" name="password" type="password"
-               class="form-control" placeholder="Password" required>
-    </label>
-
-    <div class="mb-3">
-        <p>Already Registered? <a th:href="@{/login}">Login Now</a></p>
-    </div>
-
-    <button class="btn btn-lg btn-primary col-8" type="submit">Register</button>
-
-    <p class="mt-5 mb-3 text-muted">&copy; 2020-2021</p>
-</form>
+    <footer class="mt-auto text-white-50">
+        <p>Created by <a href="https://marcusbornman.com" class="text-white">Marcus Bornman</a></p>
+    </footer>
+</div>
 
 </body>
 </html>

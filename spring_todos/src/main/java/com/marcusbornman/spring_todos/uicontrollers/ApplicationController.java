@@ -4,33 +4,34 @@ import com.marcusbornman.spring_todos.entities.User;
 import com.marcusbornman.spring_todos.exceptions.UsernameExistsException;
 import com.marcusbornman.spring_todos.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class ApplicationController {
     private final UserService userService;
 
-    @GetMapping
-    public String getHome(Model model) {
-        model.addAttribute("user", new User());
-        return "home";
+    @GetMapping("/")
+    public String getIndex() {
+        return "index";
     }
 
-    @GetMapping("register")
+    @GetMapping("/register")
     public String getRegister(Model model) {
+        if (isAuthenticated()) return "redirect:/";
+
         model.addAttribute("user", new User());
         return "register";
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public String postRegister(@ModelAttribute("user") @Validated User user, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) return "register";
 
@@ -42,11 +43,22 @@ public class AuthenticationController {
             return "register";
         }
 
+        return "redirect:/login";
+    }
+
+    @GetMapping("/login")
+    public String getLogin() {
+        if (isAuthenticated()) return "redirect:/";
+
         return "login";
     }
 
-    @GetMapping("login")
-    public String getLogin() {
-        return "login";
+    private boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || AnonymousAuthenticationToken.class.
+                isAssignableFrom(authentication.getClass())) {
+            return false;
+        }
+        return authentication.isAuthenticated();
     }
 }
