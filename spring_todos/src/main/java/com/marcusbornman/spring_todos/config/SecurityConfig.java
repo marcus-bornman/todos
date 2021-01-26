@@ -31,20 +31,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // Allow access to the actuator to everyone.
                 .antMatchers("/actuator/**").permitAll()
-                // Allow full access to the API docs.
+                // Allow access to the API docs to everyone.
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/v3/**").permitAll()
-                // Allow full access to the API; but, method level security is applied to controllers.
+                // Allow access to the API to everyone. Method level security is applied to controllers.
                 .antMatchers("/api/**").permitAll()
-                // Allow access to the register and login page to everyone.
+                // Allow access to the home page to everyone.
+                .antMatchers("/").permitAll()
+                // Allow access to the register page to everyone.
                 .antMatchers("/register").permitAll()
-                .antMatchers("/login").permitAll()
-                // We deny all requests other than the ones above.
+                // Only authenticated users can access to do lists.
+                .antMatchers("/").permitAll()
+                // Deny access to everything else.
                 .anyRequest().denyAll()
+                // Configure login through the UI and allow access to everyone.
+                .and()
+                    .formLogin()
+                    .loginPage("/login")
+                    .loginProcessingUrl("/login")
+                    .permitAll()
+                // Allow everyone to logout.
+                .and()
+                .logout().permitAll()
+                // Configure HTTP Basic Authentication.
                 .and()
                 .httpBasic()
+                // Disable CSRF
                 .and()
                 .csrf().disable();
     }
