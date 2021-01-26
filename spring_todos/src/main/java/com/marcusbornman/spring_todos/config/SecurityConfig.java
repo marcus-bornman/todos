@@ -29,37 +29,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                // Allow access to the actuator to everyone.
-                .antMatchers("/actuator/**").permitAll()
-                // Allow access to the API docs to everyone.
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/v3/**").permitAll()
-                // Allow access to the API to everyone. Method level security is applied to controllers.
-                .antMatchers("/api/**").permitAll()
-                // Allow access to the home page to everyone.
-                .antMatchers("/").permitAll()
-                // Allow access to the register page to everyone.
-                .antMatchers("/register").permitAll()
-                // Only authenticated users can access to do lists.
-                .antMatchers("/").permitAll()
-                // Deny access to everything else.
-                .anyRequest().denyAll()
+                // We allow access to all endpoints. Method-level security is used to secure specific endpoints.
+                .anyRequest().permitAll()
                 // Configure login through the UI and allow access to everyone.
-                .and()
-                    .formLogin()
-                    .loginPage("/login")
-                    .loginProcessingUrl("/login")
-                    .permitAll()
+                .and().formLogin().loginPage("/login").loginProcessingUrl("/login").permitAll()
                 // Allow everyone to logout.
-                .and()
-                .logout().permitAll()
+                .and().logout().logoutSuccessUrl("/").permitAll()
                 // Configure HTTP Basic Authentication.
-                .and()
-                .httpBasic()
+                .and().httpBasic()
                 // Disable CSRF
-                .and()
-                .csrf().disable();
+                .and().csrf().disable();
     }
 }
