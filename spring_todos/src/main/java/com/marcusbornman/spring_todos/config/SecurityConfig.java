@@ -29,15 +29,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                // We are currently allowing access to the actuator to everyone.
+                // Allow access to the actuator to everyone.
                 .antMatchers("/actuator/**").permitAll()
-                // Next, we allow full access to the API docs.
+                // Allow full access to the API docs.
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/v3/**").permitAll()
-                // We also allow full access to the API; but, method level security is applied to controllers.
+                // Allow full access to the API; but, method level security is applied to controllers.
                 .antMatchers("/api/**").permitAll()
+                // Allow access to the register and login page to everyone.
+                .antMatchers("/register").permitAll()
+                .antMatchers("/login").permitAll()
                 // We deny all requests other than the ones above.
                 .anyRequest().denyAll()
                 .and()
