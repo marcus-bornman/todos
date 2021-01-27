@@ -1,5 +1,5 @@
 <!-- PROJECT LOGO -->
-<p style="text-align: right">
+<p style="text-align: right; align-content: center;">
 <a href="https://www.marcusbornman.com">
 <img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/project_badge.png" height="100" alt="Marcus Bornman">
 </a>
