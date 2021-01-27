@@ -35,7 +35,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 <p align="center">
-<img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/screenshot_1.png" width="600" alt="Screenshot 1" />
+<img align="center" src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/screenshot_1.png" width="600" alt="Screenshot 1" />
 </p>
 
 This project contains a simple Todos application built with multiple different frameworks. The purpose of the project
