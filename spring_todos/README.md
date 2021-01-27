@@ -10,9 +10,11 @@
 
 <!-- PROJECT SHIELDS -->
 <p align="center">
+<a href="https://github.com/marcus-bornman/todos/actions?query=workflow%3Abuild-spring-todos"><img src="https://img.shields.io/github/workflow/status/marcus-bornman/todos/build-spring-todos?label=build" alt="build"></a>
 <a href="https://github.com/marcus-bornman/todos/issues"><img src="https://img.shields.io/github/issues/marcus-bornman/todos" alt="issues"></a>
 <a href="https://github.com/marcus-bornman/todos/network"><img src="https://img.shields.io/github/forks/marcus-bornman/todos" alt="forks"></a>
 <a href="https://github.com/marcus-bornman/todos/stargazers"><img src="https://img.shields.io/github/stars/marcus-bornman/todos" alt="stars"></a>
+<a href="https://google.github.io/styleguide/javaguide.html"><img src="https://img.shields.io/badge/style-google_java-40c4ff.svg" alt="style"></a>
 <a href="https://github.com/marcus-bornman/todos/blob/master/LICENSE"><img src="https://img.shields.io/github/license/marcus-bornman/todos" alt="license"></a>
 </p>
 
