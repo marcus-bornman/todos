@@ -1,5 +1,5 @@
 <!-- PROJECT LOGO -->
-<p style="text-align: right">
+<p align="right">
 <a href="https://www.marcusbornman.com">
 <img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/project_badge.png" height="100" alt="Marcus Bornman">
 </a>
@@ -9,7 +9,7 @@
 </p>
 
 <!-- PROJECT SHIELDS -->
-<p style="text-align: center">
+<p align="center">
 <a href="https://github.com/marcus-bornman/todos/issues"><img src="https://img.shields.io/github/issues/marcus-bornman/todos" alt="issues"></a>
 <a href="https://github.com/marcus-bornman/todos/network"><img src="https://img.shields.io/github/forks/marcus-bornman/todos" alt="forks"></a>
 <a href="https://github.com/marcus-bornman/todos/stargazers"><img src="https://img.shields.io/github/stars/marcus-bornman/todos" alt="stars"></a>
@@ -34,7 +34,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-<p style="text-align: center">
+<p align="center">
 <img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/screenshot_1.png" width="600" alt="Screenshot 1" />
 </p>
 
