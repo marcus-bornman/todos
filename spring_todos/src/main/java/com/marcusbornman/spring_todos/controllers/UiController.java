@@ -42,6 +42,11 @@ public class UiController {
         return "home";
     }
 
+    @GetMapping ("/api")
+    public String getApi() {
+        return "redirect:/swagger-ui/";
+    }
+
     @GetMapping("/register")
     public String getRegister(Model model) {
         if (authenticatedUser() != null) return "redirect:/";
