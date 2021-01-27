@@ -2,11 +2,11 @@ name: build-spring-todos
 
 on:
   push:
-    branches: [ master ]
-    paths: ['spring_todos/**']
+    branches: [ main ]
+    paths: 'spring_todos/**'
   pull_request:
-    branches: [ master ]
-    paths: ['spring_todos/**']
+    branches: [ main ]
+    paths: 'spring_todos/**'
 
 jobs:
   build:
