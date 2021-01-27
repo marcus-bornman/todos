@@ -52,7 +52,7 @@ data is persisted using a MySQL database.
 <!-- GETTING STARTED -->
 ## Getting Started
 If this is your first Spring Application, you may want to see [A Guide on Building an Application with Spring Boot](https://spring.io/guides/gs/spring-boot/).
-To build this project you will need to have Java 13 and [Apache Maven](https://maven.apache.org) installed.
+To build this project you will need to have Java 15 and [Apache Maven](https://maven.apache.org) installed.
 You can ensure that the project compiles by running the following command from this folder:
 ```shell script
 mvn clean install
