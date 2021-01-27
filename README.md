@@ -1,9 +1,9 @@
 <!-- PROJECT LOGO -->
-<p style="text-align: right; align-content: center;">
+<div style="text-align: right">
 <a href="https://www.marcusbornman.com">
 <img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/project_badge.png" height="100" alt="Marcus Bornman">
 </a>
-</p>
+</div>
 <p style="text-align: center;">
 <img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/assets/project_logo.png" height="200" alt="Todos" />
 </p>
