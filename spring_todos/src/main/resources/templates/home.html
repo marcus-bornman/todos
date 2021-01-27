@@ -124,21 +124,62 @@
         <div>
             <h3 class="float-md-start mb-0">Todos</h3>
             <nav class="nav nav-masthead justify-content-center float-md-end">
-                <a class="nav-link" th:href="@{/register}">Register</a>
-                <a class="nav-link" th:href="@{/login}">Login</a>
-                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+                <form th:action="@{/logout}" method="POST">
                     <a class="nav-link" onclick="this.closest('form').submit();return false;">Log Out</a>
                 </form>
             </nav>
         </div>
     </header>
 
-    <main class="px-3">
-        <h1>Welcome to Todos</h1>
-        <p class="lead">Todos is a simple application for you to create, edit and delete Todo Lists and Tasks.</p>
-        <p class="lead">
-            <a th:href="@{/register}" class="btn btn-lg btn-secondary fw-bold border-white bg-white">Register</a>
-        </p>
+    <main sec:authorize="isAuthenticated()" class="container">
+        <div th:each="list : ${todoLists}" class="my-3 p-3 bg-white rounded shadow-sm text-start">
+            <div class="border-bottom d-flex justify-content-between">
+                <h5 class="pb-2 mb-0 text-dark" th:text="${list.getTitle()}"></h5>
+                <a th:href="@{/todoLists/{todoListId}(todoListId=${list.getId()})}">Delete</a>
+            </div>
+            <div th:each="todo : ${list.getTodos()}" class="d-flex text-muted pt-3">
+                <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-gray-dark" th:text="${todo.getTitle()}"></strong>
+                        <a th:href="@{/todoLists/{todoListId}/todos/{todoId}(todoListId=${list.getId()}, todoId=${todo.getId()})}">X</a>
+                    </div>
+                    <span class="d-block" th:text="${todo.getDescription()}">Description</span>
+                </div>
+            </div>
+            <div class="d-flex text-muted pt-3">
+                <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+                    <form th:object="${newTodo}"
+                          th:action="@{/todoLists/{todoListId}/todos(todoListId=${list.getId()})}" method="POST">
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                <label>
+                                    <input th:field="*{title}" th:errorclass="is-invalid" name="todoTitle" type="text"
+                                           class="form-control" placeholder="Title"
+                                           required>
+                                </label>
+                                <label>
+                                    <input th:field="*{description}" th:errorclass="is-invalid" name="todoDescription"
+                                           type="text" class="form-control w-100"
+                                           placeholder="Description"
+                                           required>
+                                </label>
+                            </span>
+                            <a onclick="this.closest('form').submit();return false;">Add</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <form th:object="${newTodoList}" th:action="@{/todoLists}" class="form-newlist" method="POST">
+            <label>
+                <input th:field="*{title}" th:errorclass="is-invalid" name="todoListTitle" type="text"
+                       class="form-control btn-lg" placeholder="Todo List Title" required>
+            </label>
+            <button class="btn btn-lg btn-secondary fw-bold border-white bg-white text-black-50 align-top"
+                    type="submit">
+                Add
+            </button>
+        </form>
     </main>
 
     <footer class="mt-auto text-white-50">
