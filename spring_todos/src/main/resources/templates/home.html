@@ -19,19 +19,6 @@
 
     <!-- Custom CSS -->
     <style>
-        /* Custom default button */
-        .btn-secondary,
-        .btn-secondary:hover,
-        .btn-secondary:focus {
-            color: #333;
-            text-shadow: none; /* Prevent inheritance from `body` */
-        }
-
-
-        /*
-         * Base structure
-         */
-
         body {
             text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
             box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
@@ -40,11 +27,6 @@
         .cover-container {
             max-width: 42em;
         }
-
-
-        /*
-         * Header
-         */
 
         .nav-masthead .nav-link {
             padding: .25rem 0;
@@ -135,15 +117,15 @@
         <div th:each="list : ${todoLists}" class="my-3 p-3 bg-white rounded shadow-sm text-start">
             <div class="border-bottom d-flex justify-content-between">
                 <h5 class="pb-2 mb-0 text-dark" th:text="${list.getTitle()}"></h5>
-                <a th:href="@{/todoLists/{todoListId}(todoListId=${list.getId()})}">Delete</a>
+                <a class="btn btn-sm btn-close fw-bold border-dark text-black-50" th:href="@{/todoLists/{todoListId}(todoListId=${list.getId()})}"></a>
             </div>
             <div th:each="todo : ${list.getTodos()}" class="d-flex text-muted pt-3">
                 <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
                     <div class="d-flex justify-content-between">
                         <strong class="text-gray-dark" th:text="${todo.getTitle()}"></strong>
-                        <a th:href="@{/todoLists/{todoListId}/todos/{todoId}(todoListId=${list.getId()}, todoId=${todo.getId()})}">X</a>
+                        <a class="btn btn-sm btn-close fw-bold border-dark text-black-50" th:href="@{/todoLists/{todoListId}/todos/{todoId}(todoListId=${list.getId()}, todoId=${todo.getId()})}"></a>
                     </div>
-                    <span class="d-block" th:text="${todo.getDescription()}">Description</span>
+                    <span class="d-block" th:text="${todo.getDescription()}"></span>
                 </div>
             </div>
             <div class="d-flex text-muted pt-3">
@@ -154,17 +136,15 @@
                             <span>
                                 <label>
                                     <input th:field="*{title}" th:errorclass="is-invalid" name="todoTitle" type="text"
-                                           class="form-control" placeholder="Title"
-                                           required>
+                                           class="form-control" placeholder="Title" required>
                                 </label>
                                 <label>
                                     <input th:field="*{description}" th:errorclass="is-invalid" name="todoDescription"
                                            type="text" class="form-control w-100"
-                                           placeholder="Description"
-                                           required>
+                                           placeholder="Description">
                                 </label>
                             </span>
-                            <a onclick="this.closest('form').submit();return false;">Add</a>
+                            <button class="btn btn-sm btn-outline-primary fw-bold border-dark text-black-50" type="submit">Add</button>
                         </div>
                     </form>
                 </div>
@@ -175,7 +155,7 @@
                 <input th:field="*{title}" th:errorclass="is-invalid" name="todoListTitle" type="text"
                        class="form-control btn-lg" placeholder="Todo List Title" required>
             </label>
-            <button class="btn btn-lg btn-secondary fw-bold border-white bg-white text-black-50 align-top"
+            <button class="btn btn-lg btn-primary fw-bold border-white text-black-50 align-top"
                     type="submit">
                 Add
             </button>
@@ -183,7 +163,7 @@
     </main>
 
     <footer class="mt-auto text-white-50">
-        <p>Created by <a href="https://marcusbornman.com" class="text-white">Marcus Bornman</a></p>
+        <p>Created by <a href="https://marcusbornman.com" class="text-white">Marcus Bornman</a>. See also: <a class="text-white" th:href="@{/api}">API Documentation</a>.</p>
     </footer>
 </div>
 

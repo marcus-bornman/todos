@@ -50,7 +50,7 @@ public class User implements UserDetails {
     @NotNull
     @CreationTimestamp
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime creationDate;
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnore

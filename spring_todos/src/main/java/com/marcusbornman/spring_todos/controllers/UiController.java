@@ -49,8 +49,6 @@ public class UiController {
 
     @GetMapping("/register")
     public String getRegister(Model model) {
-        if (authenticatedUser() != null) return "redirect:/";
-
         model.addAttribute("user", new User());
         return "register";
     }
@@ -72,8 +70,6 @@ public class UiController {
 
     @GetMapping("/login")
     public String getLogin() {
-        if (authenticatedUser() != null) return "redirect:/";
-
         return "login";
     }
 
