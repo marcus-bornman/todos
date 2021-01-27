@@ -1,4 +1,4 @@
-package com.marcusbornman.spring_todos.config;
+package com.marcusbornman.todos.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,12 +10,13 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 public class SpringFoxConfig {
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.OAS_30)
-                .select()
-                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
-                .paths(PathSelectors.ant("/api/**"))
-                .build();
-    }
+
+  @Bean
+  Docket api() {
+    return new Docket(DocumentationType.OAS_30)
+        .select()
+        .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
+        .paths(PathSelectors.ant("/api/**"))
+        .build();
+  }
 }

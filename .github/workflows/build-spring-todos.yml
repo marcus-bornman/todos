@@ -21,4 +21,4 @@ jobs:
           java-version: 15
       - name: Build with Maven
         working-directory: spring_todos
-        run: mvn -B -DskipTests=true package --file pom.xml
+        run: mvn -B package --file pom.xml
