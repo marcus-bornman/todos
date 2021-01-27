@@ -3,10 +3,10 @@ name: build-spring-todos
 on:
   push:
     branches: [ main ]
-    paths: ['spring_todos/**']
+    paths: 'spring_todos/**'
   pull_request:
     branches: [ main ]
-    paths: ['spring_todos/**']
+    paths: 'spring_todos/**'
 
 jobs:
   build:
