@@ -4,6 +4,7 @@ import com.marcusbornman.spring_todos.entities.User;
 import com.marcusbornman.spring_todos.exceptions.UserNotFoundException;
 import com.marcusbornman.spring_todos.exceptions.UsernameExistsException;
 import com.marcusbornman.spring_todos.services.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Api(tags = "Users")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")

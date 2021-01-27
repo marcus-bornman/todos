@@ -4,6 +4,7 @@ import com.marcusbornman.spring_todos.entities.Todo;
 import com.marcusbornman.spring_todos.exceptions.TodoListNotFoundException;
 import com.marcusbornman.spring_todos.exceptions.TodoNotFoundException;
 import com.marcusbornman.spring_todos.services.TodoService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Api(tags = "Todos")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/{username}/todoLists/{todoListId}/todos")
