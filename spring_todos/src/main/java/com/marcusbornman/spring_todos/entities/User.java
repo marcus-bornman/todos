@@ -47,15 +47,17 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean disabled = false;
 
+    @NotNull
     @CreationTimestamp
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime creationDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<String> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
     private List<TodoList> todoLists;
 
     public void setPassword(String password) {

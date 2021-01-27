@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 public class Todo {
     @Id
     @GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotNull
