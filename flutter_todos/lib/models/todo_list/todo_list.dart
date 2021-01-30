@@ -7,6 +7,7 @@ part 'todo_list.g.dart';
 @freezed
 abstract class TodoList with _$TodoList {
   factory TodoList({
+    String uuid,
     @required String title,
     @required List<TodoItem> items,
   }) = _TodoList;
