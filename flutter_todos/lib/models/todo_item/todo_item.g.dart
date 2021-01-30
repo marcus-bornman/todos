@@ -8,6 +8,7 @@ part of 'todo_item.dart';
 
 _$_TodoItem _$_$_TodoItemFromJson(Map<String, dynamic> json) {
   return _$_TodoItem(
+    uuid: json['uuid'] as String,
     title: json['title'] as String,
     description: json['description'] as String,
   );
@@ -15,6 +16,7 @@ _$_TodoItem _$_$_TodoItemFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$_$_TodoItemToJson(_$_TodoItem instance) =>
     <String, dynamic>{
+      'uuid': instance.uuid,
       'title': instance.title,
       'description': instance.description,
     };
