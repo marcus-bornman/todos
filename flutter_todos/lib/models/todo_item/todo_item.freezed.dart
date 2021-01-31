@@ -17,8 +17,7 @@ class _$TodoItemTearOff {
   const _$TodoItemTearOff();
 
 // ignore: unused_element
-  _TodoItem call(
-      {@required String uuid, @required String title, String description}) {
+  _TodoItem call({String uuid, @required String title, String description}) {
     return _TodoItem(
       uuid: uuid,
       title: title,
@@ -113,9 +112,8 @@ class __$TodoItemCopyWithImpl<$Res> extends _$TodoItemCopyWithImpl<$Res>
 
 /// @nodoc
 class _$_TodoItem implements _TodoItem {
-  _$_TodoItem({@required this.uuid, @required this.title, this.description})
-      : assert(uuid != null),
-        assert(title != null);
+  _$_TodoItem({this.uuid, @required this.title, this.description})
+      : assert(title != null);
 
   factory _$_TodoItem.fromJson(Map<String, dynamic> json) =>
       _$_$_TodoItemFromJson(json);
@@ -164,10 +162,8 @@ class _$_TodoItem implements _TodoItem {
 }
 
 abstract class _TodoItem implements TodoItem {
-  factory _TodoItem(
-      {@required String uuid,
-      @required String title,
-      String description}) = _$_TodoItem;
+  factory _TodoItem({String uuid, @required String title, String description}) =
+      _$_TodoItem;
 
   factory _TodoItem.fromJson(Map<String, dynamic> json) = _$_TodoItem.fromJson;
 
