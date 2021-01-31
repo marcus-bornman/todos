@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todos/blocs/auth_bloc/auth_bloc.dart';
+import 'package:flutter_todos/blocs/todo_lists_bloc/todo_lists_bloc.dart';
 import 'package:flutter_todos/widgets/auth_page.dart';
 import 'package:flutter_todos/widgets/lists_page.dart';
 import 'package:flutter_todos/widgets/loading_page.dart';
@@ -20,7 +21,12 @@ class LandingPage extends StatelessWidget {
 
         if (state is Unauthenticated) return AuthPage();
 
-        if (state is Authenticated) return ListsPage();
+        if (state is Authenticated) {
+          return BlocProvider<TodoListsBloc>(
+              create: (context) =>
+                  TodoListsBloc()..add(InitTodoLists(state.userId)),
+              child: ListsPage(userUuid: state.userId));
+        }
 
         return null;
       },

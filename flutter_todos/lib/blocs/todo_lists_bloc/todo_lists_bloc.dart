@@ -39,26 +39,31 @@ class TodoListsBloc extends Bloc<TodoListsEvent, TodoListsState> {
     }
   }
 
-  _mapInitTodoListsToState(InitTodoLists event) async* {
+  Stream<TodoListsState> _mapInitTodoListsToState(InitTodoLists event) async* {
     _todoListsSubscription?.cancel();
-    _todoListRepo.todoLists(event.userUuid).listen(
-          (lists) => add(HandleChange(lists)),
-        );
+    _todoListRepo.todoLists(event.userUuid).listen((lists) {
+      add(HandleChange(lists));
+    });
   }
 
-  _mapAddTodoListToState(AddTodoList event) async* {
+  Stream<TodoListsState> _mapAddTodoListToState(AddTodoList event) async* {
+    yield TodoListsLoading();
     _todoListRepo.addNewTodoList(event.todoList);
   }
 
-  _mapUpdateTodoListToState(UpdateTodoList event) async* {
+  Stream<TodoListsState> _mapUpdateTodoListToState(
+      UpdateTodoList event) async* {
+    yield TodoListsLoading();
     _todoListRepo.updateTodoList(event.todoList);
   }
 
-  _mapDeleteTodoListToState(DeleteTodoList event) async* {
+  Stream<TodoListsState> _mapDeleteTodoListToState(
+      DeleteTodoList event) async* {
+    yield TodoListsLoading();
     _todoListRepo.deleteTodoList(event.todoList);
   }
 
-  _mapHandleChangeToState(HandleChange event) async* {
+  Stream<TodoListsState> _mapHandleChangeToState(HandleChange event) async* {
     yield TodoListsLoaded(event.lists);
   }
 
