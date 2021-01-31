@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todos/blocs/todo_lists_bloc/todo_lists_bloc.dart';
 import 'package:flutter_todos/models/todo_list/todo_list.dart';
 import 'package:flutter_todos/widgets/edit_list_page.dart';
+import 'package:flutter_todos/widgets/todo_list_tile.dart';
 
 class ListsPage extends StatelessWidget {
   final String userUuid;
@@ -24,39 +25,7 @@ class ListsPage extends StatelessWidget {
               separatorBuilder: (context, index) => Divider(),
               itemBuilder: (context, index) {
                 final todoList = state.lists.elementAt(index);
-                return ListTile(
-                  title: Text(todoList.title),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.open_in_new),
-                        onPressed: () {
-                          BlocProvider.of<TodoListsBloc>(context)
-                              .add(DeleteTodoList(todoList));
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () async {
-                          TodoList editedList =
-                              await editTodoList(context, todoList);
-                          if (editedList != null) {
-                            BlocProvider.of<TodoListsBloc>(context)
-                                .add(UpdateTodoList(editedList));
-                          }
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          BlocProvider.of<TodoListsBloc>(context)
-                              .add(DeleteTodoList(todoList));
-                        },
-                      ),
-                    ],
-                  ),
-                );
+                return TodoListTile(todoList: todoList);
               },
             );
           }
