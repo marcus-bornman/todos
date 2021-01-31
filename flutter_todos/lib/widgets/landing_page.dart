@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todos/blocs/auth_bloc/auth_bloc.dart';
 import 'package:flutter_todos/widgets/auth_page.dart';
-import 'package:flutter_todos/widgets/home_page.dart';
+import 'package:flutter_todos/widgets/lists_page.dart';
 import 'package:flutter_todos/widgets/loading_page.dart';
 
 class LandingPage extends StatelessWidget {
@@ -20,7 +20,7 @@ class LandingPage extends StatelessWidget {
 
         if (state is Unauthenticated) return AuthPage();
 
-        if (state is Authenticated) return HomePage();
+        if (state is Authenticated) return ListsPage();
 
         return null;
       },
