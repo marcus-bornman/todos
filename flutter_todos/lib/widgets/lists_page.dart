@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todos/blocs/auth_bloc/auth_bloc.dart';
 import 'package:flutter_todos/blocs/todo_lists_bloc/todo_lists_bloc.dart';
 import 'package:flutter_todos/models/todo_list/todo_list.dart';
 import 'package:flutter_todos/widgets/edit_list_page.dart';
@@ -14,7 +15,23 @@ class ListsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Todo Lists')),
+      appBar: AppBar(
+        title: Text('Todo Lists'),
+        actions: [
+          DropdownButton(
+            onChanged: (_) {},
+            icon: Icon(Icons.more_vert),
+            items: [
+              DropdownMenuItem(
+                child: Text('Sign Out'),
+                onTap: () {
+                  BlocProvider.of<AuthBloc>(context).add(Logout());
+                },
+              )
+            ],
+          )
+        ],
+      ),
       body: BlocBuilder<TodoListsBloc, TodoListsState>(
         builder: (context, state) {
           if (state is TodoListsLoading) return LinearProgressIndicator();
