@@ -23,7 +23,7 @@ class FirebaseTodoItemRepo implements TodoItemRepo {
   @override
   Stream<List<TodoItem>> todoItems() {
     return todoItemCollection.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => TodoItem.fromJson(doc.data())).toList();
+      return snapshot.docs.map((doc) => TodoItem.fromDocument(doc)).toList();
     });
   }
 

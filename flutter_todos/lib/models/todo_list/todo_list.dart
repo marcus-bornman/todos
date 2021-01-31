@@ -1,4 +1,4 @@
-import 'package:flutter_todos/models/todo_item/todo_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo_list.freezed.dart';
@@ -14,4 +14,12 @@ abstract class TodoList with _$TodoList {
 
   factory TodoList.fromJson(Map<String, dynamic> json) =>
       _$TodoListFromJson(json);
+
+  static TodoList fromDocument(DocumentSnapshot document) {
+    return TodoList(
+      uuid: document.id,
+      userUuid: document.data()['userUuid'],
+      title: document.data()['title'],
+    );
+  }
 }

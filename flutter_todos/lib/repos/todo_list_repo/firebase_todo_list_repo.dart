@@ -21,7 +21,7 @@ class FirebaseTodoListRepo implements TodoListRepo {
         .where('userUuid', isEqualTo: userUuid)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => TodoList.fromJson(doc.data())).toList();
+      return snapshot.docs.map((doc) => TodoList.fromDocument(doc)).toList();
     });
   }
 
