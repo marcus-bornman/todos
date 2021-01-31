@@ -14,7 +14,7 @@ class TodoListsBloc extends Bloc<TodoListsEvent, TodoListsState> {
 
   TodoListsBloc()
       : _todoListRepo = TodoListRepo.instance,
-        super(Loading());
+        super(TodoListsLoading());
 
   @override
   Stream<TodoListsState> mapEventToState(TodoListsEvent event) async* {
@@ -59,7 +59,7 @@ class TodoListsBloc extends Bloc<TodoListsEvent, TodoListsState> {
   }
 
   _mapHandleChangeToState(HandleChange event) async* {
-    yield Loaded(event.lists);
+    yield TodoListsLoaded(event.lists);
   }
 
   @override
