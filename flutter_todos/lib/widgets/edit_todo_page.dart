@@ -33,7 +33,7 @@ class EditTodoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(todoItem.uuid == null ? 'Add Todo List' : 'Edit Todo List'),
+        title: Text(todoItem.uuid == null ? 'Add Todo' : 'Edit Todo'),
       ),
       body: Form(
         key: _formKey,
