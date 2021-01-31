@@ -7,8 +7,10 @@ class FirebaseTodoItemRepo implements TodoItemRepo {
   final CollectionReference todoItemCollection;
 
   FirebaseTodoItemRepo(TodoList todoList)
-      : todoItemCollection =
-            FirebaseFirestore.instance.doc(todoList.uuid).collection('items');
+      : todoItemCollection = FirebaseFirestore.instance
+            .collection('todoLists')
+            .doc(todoList.uuid)
+            .collection('items');
 
   @override
   Future<void> addNewTodoItem(TodoItem todo) {
