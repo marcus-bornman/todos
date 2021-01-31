@@ -10,11 +10,15 @@ abstract class TodoListRepo {
     return _instance;
   }
 
+  /// Adds a new TodoList to persistent storage.
   Future<void> addNewTodoList(TodoList todo);
 
+  /// Deletes a TodoList from persistent storage.
   Future<void> deleteTodoList(TodoList todo);
 
-  Stream<List<TodoList>> todoLists();
+  /// Returns a streamed list of all TodoLists for a specific user.
+  Stream<List<TodoList>> todoLists(String userUuid);
 
+  /// Updates a TodoList in persistent storage.
   Future<void> updateTodoList(TodoList todo);
 }

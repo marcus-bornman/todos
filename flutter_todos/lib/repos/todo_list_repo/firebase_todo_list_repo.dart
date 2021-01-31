@@ -16,8 +16,11 @@ class FirebaseTodoListRepo implements TodoListRepo {
   }
 
   @override
-  Stream<List<TodoList>> todoLists() {
-    return todoListCollection.snapshots().map((snapshot) {
+  Stream<List<TodoList>> todoLists(String userUuid) {
+    return todoListCollection
+        .where('userUuid', isEqualTo: userUuid)
+        .snapshots()
+        .map((snapshot) {
       return snapshot.docs.map((doc) => TodoList.fromJson(doc.data())).toList();
     });
   }
