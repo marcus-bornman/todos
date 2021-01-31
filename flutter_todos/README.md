@@ -5,7 +5,7 @@
 </a>
 </p>
 <p align="center">
-<img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/flutter_todos/assets/project_logo.png" height="100" alt="Project Logo" />
+<img src="https://raw.githubusercontent.com/marcus-bornman/todos/master/flutter_todos/assets/project_logo.png" height="200" alt="Project Logo" />
 </p>
 
 <!-- PROJECT SHIELDS -->
