@@ -18,9 +18,13 @@ class _$TodoListTearOff {
 
 // ignore: unused_element
   _TodoList call(
-      {String uuid, @required String title, @required List<TodoItem> items}) {
+      {String uuid,
+      @required String userUuid,
+      @required String title,
+      @required List<TodoItem> items}) {
     return _TodoList(
       uuid: uuid,
+      userUuid: userUuid,
       title: title,
       items: items,
     );
@@ -39,6 +43,7 @@ const $TodoList = _$TodoListTearOff();
 /// @nodoc
 mixin _$TodoList {
   String get uuid;
+  String get userUuid;
   String get title;
   List<TodoItem> get items;
 
@@ -51,7 +56,7 @@ mixin _$TodoList {
 abstract class $TodoListCopyWith<$Res> {
   factory $TodoListCopyWith(TodoList value, $Res Function(TodoList) then) =
       _$TodoListCopyWithImpl<$Res>;
-  $Res call({String uuid, String title, List<TodoItem> items});
+  $Res call({String uuid, String userUuid, String title, List<TodoItem> items});
 }
 
 /// @nodoc
@@ -65,11 +70,13 @@ class _$TodoListCopyWithImpl<$Res> implements $TodoListCopyWith<$Res> {
   @override
   $Res call({
     Object uuid = freezed,
+    Object userUuid = freezed,
     Object title = freezed,
     Object items = freezed,
   }) {
     return _then(_value.copyWith(
       uuid: uuid == freezed ? _value.uuid : uuid as String,
+      userUuid: userUuid == freezed ? _value.userUuid : userUuid as String,
       title: title == freezed ? _value.title : title as String,
       items: items == freezed ? _value.items : items as List<TodoItem>,
     ));
@@ -81,7 +88,7 @@ abstract class _$TodoListCopyWith<$Res> implements $TodoListCopyWith<$Res> {
   factory _$TodoListCopyWith(_TodoList value, $Res Function(_TodoList) then) =
       __$TodoListCopyWithImpl<$Res>;
   @override
-  $Res call({String uuid, String title, List<TodoItem> items});
+  $Res call({String uuid, String userUuid, String title, List<TodoItem> items});
 }
 
 /// @nodoc
@@ -96,11 +103,13 @@ class __$TodoListCopyWithImpl<$Res> extends _$TodoListCopyWithImpl<$Res>
   @override
   $Res call({
     Object uuid = freezed,
+    Object userUuid = freezed,
     Object title = freezed,
     Object items = freezed,
   }) {
     return _then(_TodoList(
       uuid: uuid == freezed ? _value.uuid : uuid as String,
+      userUuid: userUuid == freezed ? _value.userUuid : userUuid as String,
       title: title == freezed ? _value.title : title as String,
       items: items == freezed ? _value.items : items as List<TodoItem>,
     ));
@@ -111,8 +120,13 @@ class __$TodoListCopyWithImpl<$Res> extends _$TodoListCopyWithImpl<$Res>
 
 /// @nodoc
 class _$_TodoList implements _TodoList {
-  _$_TodoList({this.uuid, @required this.title, @required this.items})
-      : assert(title != null),
+  _$_TodoList(
+      {this.uuid,
+      @required this.userUuid,
+      @required this.title,
+      @required this.items})
+      : assert(userUuid != null),
+        assert(title != null),
         assert(items != null);
 
   factory _$_TodoList.fromJson(Map<String, dynamic> json) =>
@@ -121,13 +135,15 @@ class _$_TodoList implements _TodoList {
   @override
   final String uuid;
   @override
+  final String userUuid;
+  @override
   final String title;
   @override
   final List<TodoItem> items;
 
   @override
   String toString() {
-    return 'TodoList(uuid: $uuid, title: $title, items: $items)';
+    return 'TodoList(uuid: $uuid, userUuid: $userUuid, title: $title, items: $items)';
   }
 
   @override
@@ -136,6 +152,9 @@ class _$_TodoList implements _TodoList {
         (other is _TodoList &&
             (identical(other.uuid, uuid) ||
                 const DeepCollectionEquality().equals(other.uuid, uuid)) &&
+            (identical(other.userUuid, userUuid) ||
+                const DeepCollectionEquality()
+                    .equals(other.userUuid, userUuid)) &&
             (identical(other.title, title) ||
                 const DeepCollectionEquality().equals(other.title, title)) &&
             (identical(other.items, items) ||
@@ -146,6 +165,7 @@ class _$_TodoList implements _TodoList {
   int get hashCode =>
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(uuid) ^
+      const DeepCollectionEquality().hash(userUuid) ^
       const DeepCollectionEquality().hash(title) ^
       const DeepCollectionEquality().hash(items);
 
@@ -163,6 +183,7 @@ class _$_TodoList implements _TodoList {
 abstract class _TodoList implements TodoList {
   factory _TodoList(
       {String uuid,
+      @required String userUuid,
       @required String title,
       @required List<TodoItem> items}) = _$_TodoList;
 
@@ -170,6 +191,8 @@ abstract class _TodoList implements TodoList {
 
   @override
   String get uuid;
+  @override
+  String get userUuid;
   @override
   String get title;
   @override
