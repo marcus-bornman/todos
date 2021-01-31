@@ -41,7 +41,8 @@ class TodoListsBloc extends Bloc<TodoListsEvent, TodoListsState> {
 
   Stream<TodoListsState> _mapInitTodoListsToState(InitTodoLists event) async* {
     _todoListsSubscription?.cancel();
-    _todoListRepo.todoLists(event.userUuid).listen((lists) {
+    _todoListsSubscription =
+        _todoListRepo.todoLists(event.userUuid).listen((lists) {
       add(HandleChange(lists));
     });
   }
