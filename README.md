@@ -51,6 +51,7 @@ within the sub-repositories themselves
 ### Built With
 Currently, the Todos application has been implemented using each of the frameworks below:
 * [Spring](https://spring.io)
+* [Flutter](https://flutter.dev/)
 
 
 <!-- GETTING STARTED -->
@@ -58,6 +59,7 @@ Currently, the Todos application has been implemented using each of the framewor
 This repository serves as a mono-repo for each of the different frameworks used to implement the Todos application components.
 To get started with individual frameworks see the sub-folders in this repo:
 * [Todos using Spring](/spring_todos)
+* [Todos using Flutter](/flutter_todos)
 
 
 <!-- USAGE EXAMPLES -->
