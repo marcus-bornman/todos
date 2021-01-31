@@ -10,7 +10,6 @@ abstract class TodoList with _$TodoList {
     String uuid,
     @required String userUuid,
     @required String title,
-    @required List<TodoItem> items,
   }) = _TodoList;
 
   factory TodoList.fromJson(Map<String, dynamic> json) =>

@@ -18,15 +18,11 @@ class _$TodoListTearOff {
 
 // ignore: unused_element
   _TodoList call(
-      {String uuid,
-      @required String userUuid,
-      @required String title,
-      @required List<TodoItem> items}) {
+      {String uuid, @required String userUuid, @required String title}) {
     return _TodoList(
       uuid: uuid,
       userUuid: userUuid,
       title: title,
-      items: items,
     );
   }
 
@@ -45,7 +41,6 @@ mixin _$TodoList {
   String get uuid;
   String get userUuid;
   String get title;
-  List<TodoItem> get items;
 
   Map<String, dynamic> toJson();
   @JsonKey(ignore: true)
@@ -56,7 +51,7 @@ mixin _$TodoList {
 abstract class $TodoListCopyWith<$Res> {
   factory $TodoListCopyWith(TodoList value, $Res Function(TodoList) then) =
       _$TodoListCopyWithImpl<$Res>;
-  $Res call({String uuid, String userUuid, String title, List<TodoItem> items});
+  $Res call({String uuid, String userUuid, String title});
 }
 
 /// @nodoc
@@ -72,13 +67,11 @@ class _$TodoListCopyWithImpl<$Res> implements $TodoListCopyWith<$Res> {
     Object uuid = freezed,
     Object userUuid = freezed,
     Object title = freezed,
-    Object items = freezed,
   }) {
     return _then(_value.copyWith(
       uuid: uuid == freezed ? _value.uuid : uuid as String,
       userUuid: userUuid == freezed ? _value.userUuid : userUuid as String,
       title: title == freezed ? _value.title : title as String,
-      items: items == freezed ? _value.items : items as List<TodoItem>,
     ));
   }
 }
@@ -88,7 +81,7 @@ abstract class _$TodoListCopyWith<$Res> implements $TodoListCopyWith<$Res> {
   factory _$TodoListCopyWith(_TodoList value, $Res Function(_TodoList) then) =
       __$TodoListCopyWithImpl<$Res>;
   @override
-  $Res call({String uuid, String userUuid, String title, List<TodoItem> items});
+  $Res call({String uuid, String userUuid, String title});
 }
 
 /// @nodoc
@@ -105,13 +98,11 @@ class __$TodoListCopyWithImpl<$Res> extends _$TodoListCopyWithImpl<$Res>
     Object uuid = freezed,
     Object userUuid = freezed,
     Object title = freezed,
-    Object items = freezed,
   }) {
     return _then(_TodoList(
       uuid: uuid == freezed ? _value.uuid : uuid as String,
       userUuid: userUuid == freezed ? _value.userUuid : userUuid as String,
       title: title == freezed ? _value.title : title as String,
-      items: items == freezed ? _value.items : items as List<TodoItem>,
     ));
   }
 }
@@ -120,14 +111,9 @@ class __$TodoListCopyWithImpl<$Res> extends _$TodoListCopyWithImpl<$Res>
 
 /// @nodoc
 class _$_TodoList implements _TodoList {
-  _$_TodoList(
-      {this.uuid,
-      @required this.userUuid,
-      @required this.title,
-      @required this.items})
+  _$_TodoList({this.uuid, @required this.userUuid, @required this.title})
       : assert(userUuid != null),
-        assert(title != null),
-        assert(items != null);
+        assert(title != null);
 
   factory _$_TodoList.fromJson(Map<String, dynamic> json) =>
       _$_$_TodoListFromJson(json);
@@ -138,12 +124,10 @@ class _$_TodoList implements _TodoList {
   final String userUuid;
   @override
   final String title;
-  @override
-  final List<TodoItem> items;
 
   @override
   String toString() {
-    return 'TodoList(uuid: $uuid, userUuid: $userUuid, title: $title, items: $items)';
+    return 'TodoList(uuid: $uuid, userUuid: $userUuid, title: $title)';
   }
 
   @override
@@ -156,9 +140,7 @@ class _$_TodoList implements _TodoList {
                 const DeepCollectionEquality()
                     .equals(other.userUuid, userUuid)) &&
             (identical(other.title, title) ||
-                const DeepCollectionEquality().equals(other.title, title)) &&
-            (identical(other.items, items) ||
-                const DeepCollectionEquality().equals(other.items, items)));
+                const DeepCollectionEquality().equals(other.title, title)));
   }
 
   @override
@@ -166,8 +148,7 @@ class _$_TodoList implements _TodoList {
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(uuid) ^
       const DeepCollectionEquality().hash(userUuid) ^
-      const DeepCollectionEquality().hash(title) ^
-      const DeepCollectionEquality().hash(items);
+      const DeepCollectionEquality().hash(title);
 
   @JsonKey(ignore: true)
   @override
@@ -184,8 +165,7 @@ abstract class _TodoList implements TodoList {
   factory _TodoList(
       {String uuid,
       @required String userUuid,
-      @required String title,
-      @required List<TodoItem> items}) = _$_TodoList;
+      @required String title}) = _$_TodoList;
 
   factory _TodoList.fromJson(Map<String, dynamic> json) = _$_TodoList.fromJson;
 
@@ -195,8 +175,6 @@ abstract class _TodoList implements TodoList {
   String get userUuid;
   @override
   String get title;
-  @override
-  List<TodoItem> get items;
   @override
   @JsonKey(ignore: true)
   _$TodoListCopyWith<_TodoList> get copyWith;
